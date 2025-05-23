@@ -30,3 +30,18 @@ module "ec2" {
   private_subnet_id = module.subnets.private_subnet_id
   key_name         = "my-key-pair"
 }
+
+module "ubuntu_private" {
+  source        = "./modules/ubuntu"
+  private_subnet_id = module.subnets.private_subnet_id
+  key_name      = "my-key-pair"
+  vpc_id        = module.vpc.vpc_id
+  alb_sg_id     = module.alb.sg_id
+}
+
+module "alb" {
+  source         = "./modules/alb"
+  vpc_id         = module.vpc.vpc_id
+  public_subnet_id = module.subnets.public_subnet_id
+  target_instance_id = module.ubuntu_private.instance_id
+}
